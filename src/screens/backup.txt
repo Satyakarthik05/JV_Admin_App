@@ -1,0 +1,318 @@
+import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  TouchableOpacity,
+  StatusBar,
+  SafeAreaView,
+  Image,
+  Dimensions,
+  ScrollView,
+  Clipboard,
+  Alert,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRoute, useNavigation } from '@react-navigation/native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+const { width, height } = Dimensions.get('window');
+
+const CoffeeOfferScreen = () => {
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { coupon } = route.params || {};
+
+  if (!coupon) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>No offer data</Text>
+      </View>
+    );
+  }
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+
+  const handleCopy = () => {
+    if (coupon.couponCode) {
+      Clipboard.setString(coupon.couponCode);
+      Alert.alert('Copied!', `${coupon.couponCode} copied to clipboard`);
+    }
+  };
+
+  const handleRedeemNow = () => {
+    navigation.navigate('QRCodeScreen', { coupon });
+  };
+
+  return (
+  //   <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+  //     <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+
+  //     <ScrollView
+  //       style={[styles.container, { paddingTop: insets.top }]}
+  //       showsVerticalScrollIndicator={false}
+  //     >
+  //       {/* Header Image */}
+  //       <ImageBackground
+  //         source={{ uri: coupon.imageUrl }}
+  //         style={styles.headerBackground}
+  //         resizeMode="cover"
+  //       >
+  //         <TouchableOpacity
+  //           style={styles.backButton}
+  //           onPress={() => navigation.goBack()}
+  //         >
+  //           <View style={styles.backButtonCircle}>
+  //             <MaterialIcons name="arrow-back" size={24} color="#000" />
+  //           </View>
+  //         </TouchableOpacity>
+
+  //         {/* Cafe Info Overlay */}
+  //         <View style={styles.cafeInfoOverlay}>
+  //           <Image
+  //             source={{ uri: coupon.vendorLogo }}
+  //             style={styles.cafeLogoOverlay}
+  //             resizeMode="contain"
+  //           />
+  //           <View style={styles.cafeTextOverlay}>
+  //             <Text style={styles.cafeNameOverlay}>{coupon.vendorName}</Text>
+  //             <Text style={styles.cafeAddressOverlay}>{coupon.categoryName}</Text>
+  //           </View>
+  //         </View>
+  //       </ImageBackground>
+
+  //       {/* Content */}
+  //       <View style={[styles.contentSection, { paddingBottom: insets.bottom + 30 }]}>
+  //         <Image  source={{ uri: coupon.imageUrl }}  style={{
+  //   width: '100%',
+  //   height: 220,
+  //   marginBottom:"3%"
+  // }} />
+  //         {/* <Text style={styles.offerTitle}>{coupon.title || 'Special Offer'}</Text>
+  //         <Text style={styles.offerDescription}>{coupon.description}</Text> */}
+
+  //         {/* {coupon.couponCode && (
+  //           <View style={styles.couponContainer}>
+  //             <View style={styles.couponCodeSection}>
+  //               <Text style={styles.codeLabel}>Code: </Text>
+  //               <Text style={styles.codeValue}>{coupon.couponCode}</Text>
+  //             </View>
+  //             <TouchableOpacity style={styles.copyButton} onPress={handleCopy}>
+  //               <Text style={styles.copyButtonText}>Copy</Text>
+  //             </TouchableOpacity>
+  //           </View>
+  //         )} */}
+
+  //         <TouchableOpacity style={styles.redeemButton} onPress={handleRedeemNow}>
+  //           <MaterialCommunityIcons name="qrcode-scan" size={24} color="#fff" />
+  //           <Text style={styles.redeemButtonText}>Redeem</Text>
+  //         </TouchableOpacity>
+
+  //         <View style={styles.infoRow}>
+  //           <MaterialCommunityIcons name="calendar-blank" size={20} color="#666" />
+  //           <Text style={styles.infoText}>
+  //             Valid until: {formatDate(coupon.validTo)}
+  //           </Text>
+  //         </View>
+
+  //         {coupon.terms && (
+  //           <View style={styles.infoRow}>
+  //             <MaterialCommunityIcons name="information-outline" size={20} color="#666" />
+  //             <Text style={styles.infoText}>Terms: {coupon.terms}</Text>
+  //           </View>
+  //         )}
+  //       </View>
+  //     </ScrollView>
+  //   </SafeAreaView>
+  <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
+  <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+
+  <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+    {/* Top carousel image */}
+    <View style={{ paddingTop: insets.top }}>
+      <ImageBackground
+        source={{ uri: coupon.imageUrl }}
+        style={styles.headerBackground}
+        resizeMode="cover"
+      >
+        {/* back + logo row */}
+        <View style={styles.topBar}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButtonCircle}>
+            <MaterialIcons name="arrow-back" size={22} color="#000" />
+          </TouchableOpacity>
+
+          <View style={styles.logoRight}>
+            <Text style={styles.logoText}>LOGO</Text>
+          </View>
+        </View>
+
+        {/* Cafe info pill at bottom of image */}
+        <View style={styles.cafeInfoOverlay}>
+          <Image source={{ uri: coupon.vendorLogo }} style={styles.cafeLogoOverlay} />
+          <View style={styles.cafeTextOverlay}>
+            <Text style={styles.cafeNameOverlay}>{coupon.vendorName}</Text>
+            <Text style={styles.cafeAddressOverlay}>{coupon.address}</Text>
+          </View>
+        </View>
+      </ImageBackground>
+    </View>
+
+    {/* White area under header */}
+    <View style={styles.bodyWrapper}>
+      {/* Coupon artwork card */}
+      <View style={styles.couponArtworkCard}>
+        <Image
+          source={{ uri: coupon.imageUrl }} // static image like 50% OFF card
+          style={styles.couponArtworkImage}
+          resizeMode="cover"
+        />
+      </View>
+
+      {/* Redeem button full‑width */}
+      <TouchableOpacity style={styles.redeemButtonFull} onPress={handleRedeemNow}>
+        <Text style={styles.redeemButtonFullText}>Redeem Now</Text>
+      </TouchableOpacity>
+
+      {/* Info list */}
+      <View style={styles.infoRow}>
+        <MaterialCommunityIcons name="calendar-blank" size={20} color="#666" />
+        <Text style={styles.infoText}>
+          Expires on: {formatDate(coupon.validTo)} at 11:59 PM
+        </Text>
+      </View>
+
+      <TouchableOpacity style={styles.infoRow}>
+        <MaterialCommunityIcons name="file-document-outline" size={20} color="#666" />
+        <Text style={styles.infoText}>Offer Details</Text>
+        <MaterialIcons name="chevron-right" size={22} color="#999" />
+      </TouchableOpacity>
+
+      <View style={[styles.infoRow, { borderBottomWidth: 0 }]}>
+        <MaterialCommunityIcons name="calendar-blank" size={20} color="#666" />
+        <Text style={styles.infoText}>
+          Expires on: {formatDate(coupon.validTo)} at 11:59 PM
+        </Text>
+      </View>
+
+      <View style={{ height: insets.bottom + 12 }} />
+    </View>
+  </ScrollView>
+</SafeAreaView>
+
+  );
+};
+
+export default CoffeeOfferScreen;
+
+// Keep all your existing styles (they're perfect!)
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#fff' },
+  headerBackground: { width: '100%', height: height * 0.38 },
+  backButton: { position: 'absolute', top: 15, left: 15, zIndex: 10 },
+  backButtonCircle: {
+    width: 40, height: 40, borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.95)', justifyContent: 'center', alignItems: 'center',
+    elevation: 5,
+  },
+  cafeInfoOverlay: {
+    position: 'absolute', bottom: 16, left: 16, right: 16,
+    flexDirection: 'row', backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 12, padding: 12,
+  },
+  cafeLogoOverlay: { width: 50, height: 50, borderRadius: 8 },
+  cafeTextOverlay: { marginLeft: 12, justifyContent: 'center' },
+  cafeNameOverlay: { fontSize: 15, fontWeight: 'bold', color: '#fff' },
+  cafeAddressOverlay: { fontSize: 11, color: '#ddd', lineHeight: 15 },
+  contentSection: {
+    backgroundColor: '#fff', borderTopLeftRadius: 30, borderTopRightRadius: 30,
+    marginTop: -30, paddingHorizontal: 20, paddingTop: 24,
+  },
+  offerTitle: { fontSize: 26, fontWeight: 'bold', color: '#000', marginBottom: 8 },
+  offerDescription: { fontSize: 15, color: '#444', lineHeight: 22, marginBottom: 20 },
+  couponContainer: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    borderWidth: 2, borderColor: '#ddd', borderStyle: 'dashed', borderRadius: 12,
+    padding: 16, marginBottom: 20,
+  },
+  couponCodeSection: { flexDirection: 'row', alignItems: 'center' },
+  codeLabel: { fontSize: 15, color: '#666' },
+  codeValue: { fontSize: 17, fontWeight: 'bold', color: '#000', marginLeft: 6 },
+  copyButton: { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8, backgroundColor: '#f0f0f0' },
+  copyButtonText: { fontWeight: '600' },
+  redeemButton: {
+    backgroundColor: '#0F172A', flexDirection: 'row', alignItems: 'center',
+    justifyContent: 'center', paddingVertical: 18, borderRadius: 14, marginBottom: 20,
+  },
+  redeemButtonText: { color: '#fff', fontSize: 17, fontWeight: 'bold', marginLeft: 10 },
+  infoRow: {
+    flexDirection: 'row', alignItems: 'center', paddingVertical: 14,
+    borderBottomWidth: 1, borderBottomColor: '#f0f0f0',
+  },
+  infoText: { fontSize: 15, color: '#555', marginLeft: 12, flex: 1 },
+
+
+  headerBackground: { width: '100%', height: height * 0.38 },
+
+topBar: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  paddingHorizontal: 16,
+  paddingTop: 8,
+},
+
+logoRight: {
+  paddingHorizontal: 10,
+  paddingVertical: 4,
+  borderRadius: 12,
+  backgroundColor: 'rgba(0,0,0,0.4)',
+},
+logoText: { color: '#fff', fontSize: 12, fontWeight: '600' },
+
+bodyWrapper: {
+  backgroundColor: '#ffffff',
+  paddingHorizontal: 16,
+  paddingTop: 16,
+},
+
+couponArtworkCard: {
+  borderRadius: 16,
+  overflow: 'hidden',
+  backgroundColor: '#fff',
+  elevation: 4,
+  shadowColor: '#000',
+  shadowOpacity: 0.08,
+  shadowOffset: { width: 0, height: 3 },
+  shadowRadius: 6,
+  marginBottom: 16,
+},
+couponArtworkImage: { width: '100%', height: 140 },
+
+redeemButtonFull: {
+  backgroundColor: '#0F172A',
+  borderRadius: 10,
+  paddingVertical: 14,
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginBottom: 12,
+},
+redeemButtonFullText: {
+  color: '#ffffff',
+  fontSize: 16,
+  fontWeight: '700',
+},
+infoRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  paddingVertical: 14,
+  borderBottomWidth: 1,
+  borderBottomColor: '#f0f0f0',
+},
+
+});
