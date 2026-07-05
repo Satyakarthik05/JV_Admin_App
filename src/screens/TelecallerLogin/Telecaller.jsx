@@ -98,6 +98,40 @@ const Telecaller = () => {
     const isAdmin = userData?.roleName === "ADMIN";
 
 
+    const renderHeader = () => {
+        return (
+            <View>
+                <View style={styles.buttons_sec}>
+                    {
+                        !isAdmin && (
+                            <View style={styles.top}>
+                                <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate("addlead")}>
+                                    <Text style={styles.btn_text}>Add New</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate("ImportLeads")}>
+                                    <Text style={styles.btn_text}>Import Leads</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )
+                    }
+
+                    <View style={styles.top}>
+                        <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate("QuestionsAns")}>
+                            <Text style={styles.btn_text}>Question & Answers</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate("followupReport")}>
+                            <Text style={styles.btn_text}>Follow-UP</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                <Text style={styles.Title}>Total Leads</Text>
+            </View>
+        );
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -133,134 +167,75 @@ const Telecaller = () => {
 
                 </View>
             </View>
-            <ScrollView style={styles.main} showsVerticalScrollIndicator={false}>
-                <View style={styles.buttons_sec}>
 
-                    {
-                        !isAdmin && (
-                            <View style={styles.top}>
-                                <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate("addlead")}>
-                                    <Text style={styles.btn_text}>Add New</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate("ImportLeads")}>
-                                    <Text style={styles.btn_text}>Import Leads</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )
-                    }
-
-
-
-                    <View style={styles.top}>
-                        <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate("QuestionsAns")}>
-                            <Text style={styles.btn_text}>Question & Answers</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate("followupReport")}>
-                            <Text style={styles.btn_text}>Follow-UP</Text>
-                        </TouchableOpacity>
-
-                    </View>
-
-                    {/* <View style={styles.top}>
-                        <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate("AddedSale")}>
-                            <Text style={styles.btn_text}>Add Sale</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate("FollowUps")}>
-                            <Text style={styles.btn_text}>Add Follow-UP</Text>
-                        </TouchableOpacity>
-                        
-                    </View> */}
+            {loading ? (
+                <View style={styles.loaderContainer}>
+                    <ActivityIndicator size="large" color={colors.commoncolor} />
                 </View>
-
-
-                <Text style={styles.Title}>Total Leads</Text>
-
-                <View style={styles.cards_begin}>
-                    {
-                        loading ? (
-                            // <View style={{ flex: 1, backgroundColor: "#fff" }}>
-                            // <ProductSkeleton/>
-                            // </View>
-                            <View style={styles.loaderContainer}>
-                                <ActivityIndicator size="large" color={colors.commoncolor} />
-                            </View>
-                        ) : (
-                            <FlatList
-                                data={GetLeadsData}
-                                keyExtractor={item => item.id}
-                                showsVerticalScrollIndicator={false}
-                                contentContainerStyle={{ paddingHorizontal: 2, paddingBottom: 50 }}
-                                // to refresh
-                                refreshing={refreshing}      //  loader on pull
-                                onRefresh={onRefresh}
-
-                                renderItem={({ item }) => {
-                                    return (
-                                        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("LeadDetails", { TotalData: item })}>
-                                            <View style={styles.top}>
-                                                <Text style={styles.name}>{item.customerName}</Text>
-                                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
-                                                    <Text style={commonstyles.active}>{item.leadStatus}</Text>
-                                                    {
-                                                        !isAdmin && (
-                                                            <TouchableOpacity onPress={() => handleDelete(item.id)}>
-                                                                <Feather name="trash" size={16} color="red" />
-                                                            </TouchableOpacity>
-                                                        )
-                                                    }
-
-                                                </View>
-                                            </View>
-                                            <Text style={styles.phno}>{item.mobileNumber}</Text>
-                                            <Text style={styles.location}>{item.address}</Text>
-                                            {/* <Text style={styles.location}>Last Call: <Text style={styles.phno}>{item.date}</Text></Text> */}
-
-                                            <View style={styles.top}>
-
-                                                {
-                                                    !isAdmin && (
-                                                        <TouchableOpacity style={[styles.btn, { paddingVertical: 8 }]} onPress={() => navigation.navigate("Calllogdetails", { LeadData: item })}>
-                                                            <Text style={styles.btn_text}>Call Logs</Text>
-                                                        </TouchableOpacity>
-                                                    )
-                                                }
-
-
-
-                                                <TouchableOpacity style={[styles.btn, { justifyContent: 'center', alignItems: 'center', flexDirection: 'row', paddingVertical: 8 }]} onPress={() => Linking.openURL(`tel:${item.mobileNumber}`)}>
-                                                    <Feather name="phone" size={14} color="#fff" />
-                                                    <Text style={styles.btn_text}>  Call Now</Text>
+            ) : (
+                <FlatList
+                    style={styles.main}
+                    data={GetLeadsData}
+                    keyExtractor={item => item.id ? item.id.toString() : Math.random().toString()}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: 50 }}
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    ListHeaderComponent={renderHeader}
+                    renderItem={({ item }) => {
+                        return (
+                            <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("LeadDetails", { TotalData: item })}>
+                                <View style={styles.top}>
+                                    <Text style={styles.name}>{item.customerName}</Text>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
+                                        <Text style={commonstyles.active}>{item.leadStatus}</Text>
+                                        {
+                                            !isAdmin && (
+                                                <TouchableOpacity onPress={() => handleDelete(item.id)}>
+                                                    <Feather name="trash" size={16} color="red" />
                                                 </TouchableOpacity>
+                                            )
+                                        }
 
-                                                <TouchableOpacity style={styles.icons} onPress={() => Linking.openURL(`whatsapp://send?phone=${item.mobileNumber}`)}>
-                                                    <FontAwesome name="whatsapp" size={16} color="#39AE41" />
-                                                </TouchableOpacity>
+                                    </View>
+                                </View>
+                                <Text style={styles.phno}>{item.mobileNumber}</Text>
+                                <Text style={styles.location}>{item.address}</Text>
 
-                                                {
-                                                    !isAdmin && (
-                                                        <TouchableOpacity style={styles.icons} onPress={() => navigation.navigate("EditLead", { editlead: item })}>
-                                                            <Feather name="edit" size={16} color="#39AE41" />
-                                                        </TouchableOpacity>
-                                                    )
-                                                }
+                                <View style={styles.top}>
 
+                                    {
+                                        !isAdmin && (
+                                            <TouchableOpacity style={[styles.btn, { paddingVertical: 8 }]} onPress={() => navigation.navigate("Calllogdetails", { LeadData: item })}>
+                                                <Text style={styles.btn_text}>Call Logs</Text>
+                                            </TouchableOpacity>
+                                        )
+                                    }
 
+                                    <TouchableOpacity style={[styles.btn, { justifyContent: 'center', alignItems: 'center', flexDirection: 'row', paddingVertical: 8 }]} onPress={() => Linking.openURL(`tel:${item.mobileNumber}`)}>
+                                        <Feather name="phone" size={14} color="#fff" />
+                                        <Text style={styles.btn_text}>  Call Now</Text>
+                                    </TouchableOpacity>
 
-                                            </View>
+                                    <TouchableOpacity style={styles.icons} onPress={() => Linking.openURL(`whatsapp://send?phone=${item.mobileNumber}`)}>
+                                        <FontAwesome name="whatsapp" size={16} color="#39AE41" />
+                                    </TouchableOpacity>
 
-                                        </TouchableOpacity>
-                                    )
-                                }}
-                            />
+                                    {
+                                        !isAdmin && (
+                                            <TouchableOpacity style={styles.icons} onPress={() => navigation.navigate("EditLead", { editlead: item })}>
+                                                <Feather name="edit" size={16} color="#39AE41" />
+                                            </TouchableOpacity>
+                                        )
+                                    }
+
+                                </View>
+
+                            </TouchableOpacity>
                         )
-                    }
-                </View>
-
-
-            </ScrollView>
+                    }}
+                />
+            )}
 
         </View>
 
